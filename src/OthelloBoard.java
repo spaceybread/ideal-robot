@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class OthelloBoard extends JFrame {
@@ -70,18 +71,60 @@ public class OthelloBoard extends JFrame {
         if (turn == 1) {
             // black turn
             cell.setState(1);
-
+            flipDiscs(r, c);
             updateAdv();
             turn = -1; 
             turnLabel.setText("Turn: White");
         } else {
             // white turn
             cell.setState(-1);
-
+            flipDiscs(r, c);
             updateAdv();
             turn = 1; 
             turnLabel.setText("Turn: Black");
         }
+    }
+
+        private void flipDiscs(int r, int c) {
+        int toMatch = cells[r][c].getState(); 
+        ArrayList<Cell> toFlip = new ArrayList<Cell>(); 
+        
+        int[][] directions = {
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1},  
+                {1, 1}, {1, -1}, {-1, 1},{-1, -1}  
+            };
+
+            for (int[] dir : directions) {
+                int dr = dir[0];
+                int dc = dir[1];
+                ArrayList<Cell> candidates = new ArrayList<>();
+
+                int i = r + dr;
+                int j = c + dc;
+
+                while (i >= 0 && i < SIZE && j >= 0 && j < SIZE) {
+                    int state = cells[i][j].getState();
+
+                    if (state == 0) {
+                        break;
+                    } 
+                    else if (state != toMatch) {
+                        candidates.add(cells[i][j]); 
+                    } else {
+                        toFlip.addAll(candidates); 
+                        break;
+                    }
+
+                    i += dr;
+                    j += dc;
+                }
+            }
+
+            for (Cell cell : toFlip) cell.setState(toMatch);
+    }
+
+    private boolean hasValidMoves(int player) {
+        return true; 
     }
 
     private void updateAdv() {
